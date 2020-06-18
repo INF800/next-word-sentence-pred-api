@@ -1,15 +1,142 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta author="Asapanna Rakesh (rakesh4real.github.io)">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Incomplete</title>
+</head>
+
+<style>
+
+    #heading{
+      text-align: center;
+      margin-top: 3%;
+    }
+
+    #suggestion-container {
+        display: grid; /* children of container by def will become grid items */
+
+        /* OPTIONAL: Make it align center */
+        margin-top: 10px;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+		border: 1px solid black;
+		border-radius: 5px;
+		padding: 10px;
+      }
 	
-	<head>
-		<title> Home </title>
-		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-	<head>
-	
+	[contenteditable]:focus {
+    outline: 0px solid transparent;
+	}
+
+    /* As both `.content` and `.overlay` are in same `grid-area`. Both will align perfectly */  
+    #input, #suggestion {
+        /* (start-row / start-col / end-row / end-col). By default it is `auto` */
+        grid-area: 1 / 1 ; 
+        
+        /* 
+          - Define width and height
+          - Becaue it wont be editable if user deletes all text from 
+            conteneteditable div! cz, width and height will collapse to 0
+            And you wont be able to edit it as you can't click on it!!
+        */
+        width: 100%;
+        height: 300px; /* Layout issue if excceds ht. Soln is to add wordlimit to input field. */ 
+      }
+</style>
+
 	<body>
-		<h2> Autocomplete </h2>
 		
 		{% block content %}
 		{% endblock %}
-		
+
+		<script>
+			const input = document.getElementById("input")
+			const suggestion = document.getElementById("suggestion")
+			
+			const debounce = (func, delay) => {
+				let inDebounce
+				return function() {
+					const context = this
+					const args = arguments
+					suggestion.textContent = '' // avoid appearing old suggestion
+					clearTimeout(inDebounce)
+					inDebounce = setTimeout(() => func.apply(context, args), delay)
+				}
+			}
+			
+			input.addEventListener('input', debounce(e=>main(e), 750))
+			
+			const main = (e) => {
+				const inputVal = e.target.textContent
+				const inputArr = inputVal.split(" ") // get last word
+				const lastIncompleteWord = inputArr.pop();  
+				//console.log(lastIncompleteWord)
+				axios.get("/api/" + lastIncompleteWord)
+				.then(reply => {
+					//convert list to string and add suggestion to it
+					suggestion.textContent = inputArr.join(" ") + " " + reply.data.response
+				})
+			}
+			
+			input.addEventListener('click', e => {
+				if(e.key === 'ArrowRight') {
+					if (suggestion.textContent != '') { // avoid rclick while no suggestion
+					// replace input textecontent with suggestion ghost sentence(or paragraph)
+					const ghost = suggestion.textContent
+					suggestion.textContent = ''; // clear ghost 
+					input.textContent = ghost; // replace input with suggestion
+					
+					// moves cursor to the end of the input box
+					setEndOfContenteditable(input);
+					} 
+				}
+			});
+			
+			// ontouchstart="fillOnTouchScreen()" for touch devs
+			function fillOnTouchScreen(){
+				if (suggestion.textContent != '') { // avoid rclick while no suggestion
+					// replace input textecontent with suggestion ghost sentence(or paragraph)
+					const ghost = suggestion.textContent
+					suggestion.textContent = ''; // clear ghost 
+					input.textContent = ghost; // replace input with suggestion
+					
+					// moves cursor to the end of the input box
+					setEndOfContenteditable(input);
+				} 
+			}
+
+			
+			// ------------------------------------------------------------
+			// Helper function(s)
+			// ------------------------------------------------------------
+			// moves cursor to the end of the input box
+			function setEndOfContenteditable(contentEditableElement)
+			{
+				//input : elem = document.getElementById('txt1')
+			
+				var range,selection;
+				if(document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
+				{
+					range = document.createRange();//Create a range (a range is a like the selection but invisible)
+					range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
+					range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+					selection = window.getSelection();//get the selection object (allows you to change selection)
+					selection.removeAllRanges();//remove any selections already made
+					selection.addRange(range);//make the range you have just created the visible selection
+				}
+				else if(document.selection)//IE 8 and lower
+				{ 
+					range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
+					range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
+					range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+					range.select();//Select the range (make it the visible selection
+				}
+			}
+		</script>
+
 	</body>
 </html>

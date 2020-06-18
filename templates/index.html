@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <h2 id="heading">I am incomplete without you!</h2>
+    
+    <div id="suggestion-container">
+        <div id="suggestion" style="color: rgba(0, 0, 0, 0.2);">This is the Suggestion</div>
+        <!-- 
+          Overlay - must be placed under `suggestion` in the HTML (inside same container) 
+          Note: It is on top of `content`
+        -->
+        <div id="input" contenteditable="true" ontouchstart="fillOnTouchScreen()">This is the Sugge</div>
+    </div>
+
+    <script>
+      /* 
+      1. Add event listeners to conteneditable and
+        - copy from `input` textContent
+        - get suggestion and call it `suggest`.
+        - rewrite textContent of `suggestion` with `inputVal` + `suggest` 
+      2. Add debounce so that you dont do it much often
+      3. Add eventlistener to replace input with sugesstion on r-click
+      */
+    </script>
+
+{% endblock %}

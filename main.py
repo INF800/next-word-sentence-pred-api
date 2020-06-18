@@ -63,14 +63,30 @@ class QueryRequest(BaseModel):
 
 
 # ----------------------------------------
+# Cross Origin Resource Sharing
+# ----------------------------------------
+
+
+# ----------------------------------------
 # ----------------------------------------
 # routes and related funcs
 # ----------------------------------------
 # ----------------------------------------
+@app.get("/")
+def api_home(request: Request):
+	"""
+	home page to display all real time values
+	"""
+	
+	context = {
+		"request": request
+	}
+	return templates.TemplateResponse("index.html", context)
+
 @app.get("/api/{incomplete_word}")
 def api_home(request: Request, incomplete_word):
 	"""
-	home page to display all real time values
+	process incomplete word and send {"response": "complete word"}
 	"""
 	# 1. search the rank of quer string in tree 
 	# (rank is stored in self.q_rank[0]) 
