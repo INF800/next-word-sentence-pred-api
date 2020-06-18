@@ -82,7 +82,7 @@
 				})
 			}
 			
-			input.addEventListener('click', e => {
+			input.addEventListener('keydown', e => {
 				if(e.key === 'ArrowRight') {
 					if (suggestion.textContent != '') { // avoid rclick while no suggestion
 					// replace input textecontent with suggestion ghost sentence(or paragraph)
@@ -95,6 +95,7 @@
 					} 
 				}
 			});
+
 			
 			// ontouchstart="fillOnTouchScreen()" for touch devs
 			function fillOnTouchScreen(){
