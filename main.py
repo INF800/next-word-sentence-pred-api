@@ -74,11 +74,14 @@ def api_home(request: Request, incomplete_word):
 	"""
 	# 1. search the rank of quer string in tree 
 	# (rank is stored in self.q_rank[0]) 
+	tree.q_rank = None
 	tree.search(incomplete_word)
 
 	# 2. based on rank, get suggestion from pop sorted list of words
 	# where index is rank
 	suggestion = ""
-	if tree.q_rank[0] is not None:
+	# 3. Make sure your incompleteword and tree search end with same word
+	# 	 otherwise, `epson` will be given for both `eps` & `epsi` 
+	if tree.q_rank[0] is not None and incomplete_word[-1]==tree.q_rank[1]:
 		suggestion = words[tree.q_rank[0]]
 	return {"response":suggestion}
