@@ -80,8 +80,10 @@ def api_home(request: Request, incomplete_word):
 	# 2. based on rank, get suggestion from pop sorted list of words
 	# where index is rank
 	suggestion = ""
-	# 3. Make sure your incompleteword and tree search end with same word
-	# 	 otherwise, `epson` will be given for both `eps` & `epsi` 
+	# 3. `incomplete_word[-1]==tree.q_rank[1]`:
+	# 	 Make sure your incompleteword and tree search end with same word
+	# 	 otherwise, `epson` will be given for both `eps` & `epsi`
+	# 	 (This can be awesome suggestion feature though) 
 	if tree.q_rank[0] is not None and incomplete_word[-1]==tree.q_rank[1]:
 		suggestion = words[tree.q_rank[0]]
 	return {"response":suggestion}
