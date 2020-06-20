@@ -19,7 +19,7 @@ import models
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine) #creates tables
-# stocks db will appear once you run uvicorn.
+# db will appear once you run uvicorn.
 # get into sqlite and try `.schema`
 
 
@@ -75,7 +75,7 @@ class QueryRequest(BaseModel):
 @app.get("/")
 def api_home(request: Request):
 	"""
-	home page to display all real time values
+	home page
 	"""
 	
 	context = {

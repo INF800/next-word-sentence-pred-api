@@ -57,6 +57,7 @@
 			const input = document.getElementById("input")
 			const suggestion = document.getElementById("suggestion")
 			
+
 			const debounce = (func, delay) => {
 				let inDebounce
 				return function() {
@@ -67,23 +68,29 @@
 					inDebounce = setTimeout(() => func.apply(context, args), delay)
 				}
 			}
-			
-			input.addEventListener('input', debounce(e=>main(e), 750))
+
+			input.addEventListener('input', debounce(e=>main(e), 100)) // 100ms 
 			
 			const main = (e) => {
-				const inputVal = e.target.textContent
+				const inputVal = e.target.innerText
 				const inputArr = inputVal.split(" ") // get last word
 				const lastIncompleteWord = inputArr.pop();  
 				//console.log(lastIncompleteWord)
 				axios.get("/api/" + lastIncompleteWord)
 				.then(reply => {
 					//convert list to string and add suggestion to it
-					suggestion.textContent = inputArr.join(" ") + " " + reply.data.response
+					suggestion.innerText = inputArr.join(" ") + " " + reply.data.response
 				})
 			}
-			
+
 			input.addEventListener('keydown', e => {
-				if(e.key === 'ArrowRight') {
+				if(e.key === 'ArrowRight' || e.key === 'Enter') {
+					
+					// disable nextline on enter
+					// use it in if condn. with e.key==shift to
+					// override and enable nextline
+					e.preventDefault()
+
 					if (suggestion.textContent != '') { // avoid rclick while no suggestion
 					// replace input textecontent with suggestion ghost sentence(or paragraph)
 					const ghost = suggestion.textContent
@@ -95,8 +102,7 @@
 					} 
 				}
 			});
-
-			
+						
 			// ontouchstart="fillOnTouchScreen()" for touch devs
 			function fillOnTouchScreen(){
 				if (suggestion.textContent != '') { // avoid rclick while no suggestion
